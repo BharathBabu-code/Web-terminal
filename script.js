@@ -44,7 +44,7 @@ function processCommand(input) {
             printOutput(new Date().toString());
             break;
         default:
-            printOutput(`bash: ${command}: command not found`);
+            printOutput(`bash: ${command}: command not found....Enter help to view valid commands`);
             break;
     }
 }
