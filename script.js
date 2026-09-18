@@ -1,6 +1,7 @@
 const terminalContainer = document.getElementById('terminal');
 const commandInput = document.getElementById('command-input');
 const outputLog = document.getElementById('output-log');
+const activePrompt = document.querySelector('.input-line .prompt');
 
 terminalContainer.addEventListener('click', () => {
     commandInput.focus();
@@ -22,6 +23,8 @@ const fileSystem = {
 };
 
 let currentPath = ["home", "guest"];
+let commandHistory = [];
+let historyIndex = -1;
 
 function getCurrentDir() {
     let dir = fileSystem;
@@ -31,6 +34,18 @@ function getCurrentDir() {
     return dir;
 }
 
+function getPromptText() {
+    let rawPath = "/" + currentPath.join("/");
+    
+    if (rawPath.startsWith("/home/guest")) {
+        rawPath = "~" + rawPath.substring(11);
+    } else if (rawPath === "/home") {
+        rawPath = "/home";
+    }
+    
+    return `guest@device:${rawPath}$ `;
+}
+
 
 
 commandInput.addEventListener('keydown', (event) => {
@@ -38,6 +53,9 @@ commandInput.addEventListener('keydown', (event) => {
         const rawInput = commandInput.value.trim(); 
         
         if (rawInput !== "") {
+            commandHistory.push(rawInput);
+            historyIndex = commandHistory.length; 
+            
             printHistoryLine(rawInput);
             processCommand(rawInput); 
         } else {
@@ -46,6 +64,25 @@ commandInput.addEventListener('keydown', (event) => {
         
         commandInput.value = '';
         terminalContainer.scrollTop = terminalContainer.scrollHeight;
+    } 
+    else if (event.key === 'ArrowUp') {
+        event.preventDefault(); // Stops the cursor from jumping to the start of the input
+        
+        if (historyIndex > 0) {
+            historyIndex--;
+            commandInput.value = commandHistory[historyIndex];
+        }
+    } 
+    else if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        
+        if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            commandInput.value = commandHistory[historyIndex];
+        } else {
+            historyIndex = commandHistory.length;
+            commandInput.value = '';
+        }
     }
 });
 
@@ -55,7 +92,7 @@ function processCommand(input) {
 
     switch (command) {
         case "help":
-            printOutput("Available commands: help, clear, echo, whoami, date");
+            printOutput("Available commands: help, clear, echo, whoami, date, cd, ls, cat, pwd");
             break;
         case "clear":
             outputLog.innerHTML = "";
@@ -116,6 +153,7 @@ function processCommand(input) {
             } else {
                 printOutput(`bash: cd: ${targetFolder}: No such file or directory`);
             }
+            activePrompt.textContent = getPromptText();
             break;
         default:
             printOutput(`bash: ${command}: command not found....Enter help to view valid commands`);
@@ -133,10 +171,9 @@ function printOutput(text) {
 
 function printHistoryLine(inputString) {
     const historyLine = document.createElement('div');
-    historyLine.classList.add('input-line'); 
-    
+    historyLine.classList.add('input-line');     
     historyLine.innerHTML = `
-        <span class="prompt">guest@device:~$</span>
+        <span class="prompt">${getPromptText()}</span>
         <span class="command-text">${inputString}</span>
     `;
     
