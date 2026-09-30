@@ -10,11 +10,11 @@ The project focuses on applying core JavaScript, DOM manipulation, state managem
 
 
 
-![Web Terminal Preview](.screenshots/screenshot1.png)
+![Web Terminal Preview](screenshots/screenshot1.png)
 
-![Web Terminal Preview](.screenshots/screenshot2.png)
+![Web Terminal Preview](screenshots/screenshot2.png)
 
-![Web Terminal Preview](.screenshots/screenshot3.png)
+![Web Terminal Preview](screenshots/screenshot3.png)
 
 
 ## ✨ Features
